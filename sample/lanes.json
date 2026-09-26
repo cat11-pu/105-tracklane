@@ -1,0 +1,17 @@
+{
+  "bad_span_code": "E_BAD_SPAN",
+  "lanes": 2,
+  "budget": 1,
+  "items": [
+    {"id": "i1", "start": 0, "length": 8},
+    {"id": "i2", "start": 2, "length": 3},
+    {"id": "i3", "start": 3, "length": 3},
+    {"id": "i4", "start": 9, "length": 2}
+  ],
+  "applied": ["m1"],
+  "edits": [
+    {"edit_id": "m1", "op": "set", "id": "i1", "length": 8},
+    {"edit_id": "m2", "op": "set", "id": "i1", "length": 1},
+    {"edit_id": "m3", "op": "add", "id": "i5", "start": 2, "length": 2}
+  ]
+}

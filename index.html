@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>tracklane 控制台</title>
+<style>
+body{font-family:system-ui,sans-serif;margin:0;background:#f7f8fa;color:#1f2430}
+header{padding:14px 20px;background:#fff;border-bottom:1px solid #e3e6ec}
+h1{font-size:17px;margin:0 0 4px}
+.hint{color:#5b6474;font-size:13px;margin:0}
+main{display:grid;grid-template-columns:330px minmax(0,1fr);gap:14px;padding:14px 20px 24px;align-items:start}
+.panel{background:#fff;border:1px solid #e3e6ec;border-radius:10px;padding:12px 14px}
+.panel h2{font-size:12px;margin:0 0 10px;color:#5b6474;font-weight:600}
+#controls button,#controls select{font:inherit;padding:5px 10px;margin:0 6px 6px 0;border:1px solid #ccd3de;border-radius:7px;background:#fff;cursor:pointer}
+#controls button.primary{background:#2f6fed;border-color:#2f6fed;color:#fff}
+#controls button:disabled{opacity:.4;cursor:not-allowed}
+#controls input[type=number],#controls input[type=text]{font:inherit;padding:4px 7px;border:1px solid #ccd3de;border-radius:7px;width:72px}
+#controls label{display:block;font-size:12px;color:#5b6474;margin:10px 0 4px}
+#stage{min-height:240px;overflow:auto}
+#stage table{border-collapse:separate;border-spacing:3px}
+#stage td{font-size:12px;padding:5px 9px;border-radius:5px;background:#f1f4f9;text-align:center;min-width:34px}
+#stage td.on{background:#dfe9ff}
+#stage td.marked{background:#2f6fed;color:#fff}
+#stage .bar{height:22px;border-radius:5px;background:#e7ecf5;position:relative;margin:4px 0}
+#stage .bar i{position:absolute;top:0;bottom:0;background:#2f6fed;border-radius:5px}
+#stage .row{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:6px}
+#stage .row+.row{margin-top:3px}
+#stage .row.ghost{outline:2px dashed #2f6fed}
+#stage .row>span:first-child{font-family:ui-monospace,monospace;font-size:13px}
+.chip{font-size:12px;padding:1px 8px;border-radius:999px;background:#eef1f6;color:#5b6474}
+.chip.ok{background:#e6f6ec;color:#0a7a3d}
+.chip.bad{background:#fdeaea;color:#b3261e}
+.chip.warn{background:#fff5e5;color:#a86400}
+pre{background:#0f172a;color:#d6e0f5;padding:12px;border-radius:8px;overflow:auto;font-size:12px;margin:12px 0 0}
+#log{font-size:12px;color:#5b6474;margin-top:10px;line-height:1.6}
+details{padding:0 20px 30px}
+summary{cursor:pointer;font-size:13px;color:#5b6474}
+textarea{width:100%;height:140px;font-family:ui-monospace,monospace;font-size:12px;margin-top:8px}
+#reload{font:inherit;padding:5px 12px;margin-top:8px;border:1px solid #ccd3de;border-radius:7px;background:#fff;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <h1>tracklane 控制台</h1>
+  <p class="hint">点按钮增删条目、改预算，看每个条目落在哪条轨道、谁被挤出；可一步一步执行，也能一次跑完。</p>
+</header>
+<main>
+  <section class="panel"><h2>操作</h2><div id="controls"></div><div id="log">点上面的按钮开始。</div></section>
+  <section class="panel"><h2>视图</h2><div id="stage"></div><div id="legend"></div><pre id="out">还没跑</pre></section>
+</main>
+<details>
+  <summary>场景数据（可直接改，改完点重新载入）</summary>
+  <textarea id="input">{
+  "bad_span_code": "E_BAD_SPAN",
+  "lanes": 2,
+  "budget": 1,
+  "items": [
+    {"id": "i1", "start": 0, "length": 8},
+    {"id": "i2", "start": 2, "length": 3},
+    {"id": "i3", "start": 3, "length": 3},
+    {"id": "i4", "start": 9, "length": 2}
+  ],
+  "applied": ["m1"],
+  "edits": [
+    {"edit_id": "m1", "op": "set", "id": "i1", "length": 8},
+    {"edit_id": "m2", "op": "set", "id": "i1", "length": 1},
+    {"edit_id": "m3", "op": "add", "id": "i5", "start": 2, "length": 2}
+  ]
+}</textarea>
+  <button id="reload">重新载入场景</button>
+</details>
+<script type="module">
+import { mount } from "./ui.js";
+
+const parts = {
+  controls: document.getElementById("controls"),
+  stage: document.getElementById("stage"),
+  out: document.getElementById("out"),
+  legend: document.getElementById("legend"),
+  log: document.getElementById("log")
+};
+
+function start(spec) {
+  try {
+    mount(spec, parts);
+  } catch (error) {
+    parts.out.textContent = String(error && error.stack ? error.stack : error);
+  }
+}
+
+document.getElementById("reload").addEventListener("click", function () {
+  try {
+    start(JSON.parse(document.getElementById("input").value));
+  } catch (error) {
+    parts.out.textContent = String(error);
+  }
+});
+
+start(JSON.parse(document.getElementById("input").value));
+</script>
+</body>
+</html>
