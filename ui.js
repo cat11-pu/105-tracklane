@@ -26,7 +26,7 @@ export function mount(spec, parts) {
     const result = applyEvents(state.items, lanes, [edit], applied, budget);
     state.items = result.items || state.items;
     state.laneOf = result.laneOf || state.laneOf;
-    state.stale = result.stale || 0;
+    state.stale = result.firstStale || 0;
     state.spilled = assign(state.items, lanes).spilled;
     state.done += 1;
     state.note = "执行了 " + edit.edit_id + "（" + edit.op + "），本轮陈旧 " + state.stale + " 条";
